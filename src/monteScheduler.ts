@@ -1,14 +1,17 @@
 import * as _ from "lodash";
 import { MeetingList, numberAttendeesScheduled } from "./utils";
 
-export function maxAttendeesMonte(meetings: MeetingList): MeetingList {
+export function monteScheduler(meetings: MeetingList): MeetingList {
   let bestNumAttendees = 0;
   let bestSchedule: MeetingList = [];
+  // stop when the last 500 times haven't beaten the current best
+  const triesBeforeGivingUp = 500;
 
   // very naive approach, shuffle list, greedily pick non-conflict meetings
-  // try 100 times for best
+  let triesLeft = triesBeforeGivingUp;
 
-  for (let times = 0; times < 100; times++) {
+  while (triesLeft > 0) {
+    triesLeft -= 1;
     const shuffledMeetings = _.shuffle(meetings);
     const usersAttending = new Set<number>();
 
@@ -36,6 +39,8 @@ export function maxAttendeesMonte(meetings: MeetingList): MeetingList {
     if (numAttendees > bestNumAttendees) {
       bestSchedule = schedule;
       bestNumAttendees = numAttendees;
+      // reset our try counter
+      triesLeft = triesBeforeGivingUp;
     }
   }
 
